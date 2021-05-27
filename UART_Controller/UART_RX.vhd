@@ -26,13 +26,16 @@ signal DATA_VALID : std_logic;
 begin
 
     data_registration : process( CLK )
+        variable TMP : std_logic_vector(7 downto 0);
     begin
         if (CLK'event and CLK = '1') then
             if (DATA_VALID = '1') then
                 DATA_OUT <= DATA_REG;
                 DATA_VLD <= '1';
+                TMP := DATA_REG;
             else
                 DATA_VLD <= '0';
+                DATA_OUT <= TMP;
             end if ;
         end if ;
     end process ; --data_registration
@@ -86,6 +89,7 @@ begin
         
         when BIT_0 => 
             DATA_REG(0) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_1;
@@ -93,6 +97,7 @@ begin
 
         when BIT_1 => 
             DATA_REG(1) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_2;
@@ -100,6 +105,7 @@ begin
         
         when BIT_2 => 
             DATA_REG(2) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_3;
@@ -107,6 +113,7 @@ begin
         
         when BIT_3 => 
             DATA_REG(3) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_4;
@@ -114,6 +121,7 @@ begin
                 
         when BIT_4 => 
             DATA_REG(4) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_5;
@@ -121,6 +129,7 @@ begin
 
         when BIT_5 => 
             DATA_REG(5) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_6;
@@ -128,6 +137,7 @@ begin
 
         when BIT_6 => 
             DATA_REG(6) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_7;
@@ -135,12 +145,14 @@ begin
 
         when BIT_7 => 
             DATA_REG(7) <= Received_serial;
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= STOP_BIT_Receive;
             end if;
    
         when STOP_BIT_Receive => 
+            RX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= INIT_STATE;
