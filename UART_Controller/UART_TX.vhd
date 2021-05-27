@@ -5,7 +5,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity UART_TX is
-    Generic(CLK_PULSE_NUM : integer := 208); --208 for BUADRATE 115200/ freq=24Mhz
+    Generic(CLK_PULSE_NUM : integer := 868); --868 for freq=100Mhz / BUADRATE 115200
     port (  CLK : in std_logic;
             nRST :in std_logic;
             nSTART : in std_logic;

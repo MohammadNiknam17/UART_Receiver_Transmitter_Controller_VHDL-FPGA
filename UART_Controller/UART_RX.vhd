@@ -25,15 +25,17 @@ signal DATA_VALID : std_logic;
 
 begin
 
-data_registration : process( CLK )
-begin
-    if (CLK'event and CLK = '1') then
-
-            DATA_OUT <= DATA_REG;
-
-
-    end if ;
-end process ; --data_registration
+    data_registration : process( CLK )
+    begin
+        if (CLK'event and CLK = '1') then
+            if (DATA_VALID = '1') then
+                DATA_OUT <= DATA_REG;
+                DATA_VLD <= '1';
+            else
+                DATA_VLD <= '0';
+            end if ;
+        end if ;
+    end process ; --data_registration
 
 
 clk_counter : process( CLK )
@@ -64,12 +66,12 @@ next_state : process( CSTATE, CLK_CNT, DATA_REG, Received_serial )
 begin
     NSTATE <= CSTATE;
     CLK_CNT_RST <= '0';
-
     DATA_VALID <= '0';
 
     case( CSTATE ) is
         when INIT_STATE =>
             DATA_REG <= (others => '0');
+            RX_Busy <= '0';
             CLK_CNT_RST <= '1';
             if (Received_serial = '0') then
                 NSTATE <= START_BIT_Receive;
@@ -146,7 +148,6 @@ begin
                 if (Received_serial = '1') then
                     DATA_VALID <= '1';
                 end if ;
-                
             end if;
 
         when others =>
