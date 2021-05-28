@@ -21,21 +21,23 @@ signal CSTATE, NSTATE : FSMTYPE;
 signal CLK_CNT : unsigned(11 downto 0) ;
 signal CLK_CNT_RST : std_logic;
 signal DATA_REG : std_logic_vector(7 downto 0);
+signal TMP : std_logic_vector(7 downto 0);
 signal DATA_VALID : std_logic;
 
 begin
 
     data_registration : process( CLK )
-        variable TMP : std_logic_vector(7 downto 0);
+        variable VTMP : std_logic_vector(7 downto 0);
     begin
         if (CLK'event and CLK = '1') then
+            TMP <= DATA_REG;
             if (DATA_VALID = '1') then
                 DATA_OUT <= DATA_REG;
                 DATA_VLD <= '1';
-                TMP := DATA_REG;
+                VTMP := DATA_REG;
             else
                 DATA_VLD <= '0';
-                DATA_OUT <= TMP;
+                DATA_OUT <= VTMP;
             end if ;
         end if ;
     end process ; --data_registration
@@ -65,11 +67,12 @@ begin
 end process ; -- state_registration
 
 
-next_state : process( CSTATE, CLK_CNT, DATA_REG, Received_serial )
+next_state : process( CSTATE, CLK_CNT, DATA_REG, Received_serial, TMP)
 begin
     NSTATE <= CSTATE;
     CLK_CNT_RST <= '0';
     DATA_VALID <= '0';
+    DATA_REG <= TMP;
 
     case( CSTATE ) is
         when INIT_STATE =>
