@@ -1,5 +1,6 @@
 -- Engineer: Mohammad Niknam
 -- Project Name:  UART_Controller
+-- Module Name:   UART_RX - Behavioral
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;

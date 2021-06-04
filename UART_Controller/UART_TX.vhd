@@ -1,5 +1,6 @@
 -- Engineer: Mohammad Niknam
 -- Project Name:  UART_Controller
+-- Module Name:   UART_TX - Behavioral
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -11,6 +12,7 @@ entity UART_TX is
             nSTART : in std_logic;
             DATA : in std_logic_vector(7 downto 0);
             DONE : out std_logic;
+            TX_Busy : out std_logic;  --data sending in progress
             TX : out std_logic);
 end UART_TX;
 
@@ -69,12 +71,14 @@ begin
         when INIT_STATE =>
             TX <= '1';
             CLK_CNT_RST <= '1';
+            TX_Busy <= '0';
             if (nSTART = '0') then
                 NSTATE <= START_BIT_SEND;
             end if ;
 
         when START_BIT_SEND =>
             TX <= '0';
+            TX_Busy <= '1';
             if (TO_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_0 ;
@@ -82,6 +86,7 @@ begin
         
         when BIT_0 => 
             TX <= DATA_REG(0);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_1;
@@ -89,6 +94,7 @@ begin
 
         when BIT_1 => 
             TX <= DATA_REG(1);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_2;
@@ -96,6 +102,7 @@ begin
         
         when BIT_2 => 
             TX <= DATA_REG(2);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_3;
@@ -103,6 +110,7 @@ begin
         
         when BIT_3 => 
             TX <= DATA_REG(3);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_4;
@@ -110,6 +118,7 @@ begin
                 
         when BIT_4 => 
             TX <= DATA_REG(4);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_5;
@@ -117,6 +126,7 @@ begin
 
         when BIT_5 => 
             TX <= DATA_REG(5);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_6;
@@ -124,6 +134,7 @@ begin
 
         when BIT_6 => 
             TX <= DATA_REG(6);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= BIT_7;
@@ -131,6 +142,7 @@ begin
 
         when BIT_7 => 
             TX <= DATA_REG(7);
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= STOP_BIT_SEND;
@@ -138,10 +150,12 @@ begin
    
         when STOP_BIT_SEND => 
             TX <= '1';
+            TX_Busy <= '1';
             if (to_integer(CLK_CNT) = (CLK_PULSE_NUM - 1)) then
                 CLK_CNT_RST <= '1';
                 NSTATE <= INIT_STATE;
                 DONE <= '1';
+                TX_Busy <= '0';
             end if;
 
         when others =>
