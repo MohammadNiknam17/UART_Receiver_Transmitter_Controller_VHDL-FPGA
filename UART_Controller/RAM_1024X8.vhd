@@ -18,7 +18,7 @@ end RAM_1024X8;
 
 architecture Behavioral of RAM_1024X8 is
     type MEMORY_TYP is array (integer range<>) of std_logic_vector(7 downto 0);
-    signal MEM : MEMORY_TYP(1023);
+    signal MEM : MEMORY_TYP(0 to 1023);
 begin
 
 read_or_write: process(clk)
