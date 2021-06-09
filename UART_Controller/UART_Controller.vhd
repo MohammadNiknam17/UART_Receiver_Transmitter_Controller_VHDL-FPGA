@@ -63,7 +63,7 @@ signal WRITE_EN, RAM_EN : std_logic;
 signal TX_Busy, nSTART_signal : std_logic;
 
 begin
-    DATA_VLD_counter : process( CLK )
+    DATA_VLD_counter_AND_SEND_DONE_counter : process( CLK )
     begin
         if (CLK'event and CLK = '1') then
             if (DATA_VLD_CNT_RST = '1') then
@@ -77,23 +77,9 @@ begin
                     RAM_EN <= '0'; 
                 end if;
             end if ;
-        end if ;
-    end process ; -- DATA_VLD_counter
-
-    RAM_ADDRESS_WRITE_PRO: process(CLK, DATA_VLD_CNT)
-        variable DATA_VLD_CNT_var : unsigned(10 downto 0);
-    begin
-        DATA_VLD_CNT_var := DATA_VLD_CNT + "1111111111";   --DATA_VLD_CNT Minus One to address
-        RAM_ADDRESS_WRITE <= std_logic_vector(DATA_VLD_CNT_var(9 downto 0));
-    end process RAM_ADDRESS_WRITE_PRO; --RAM_ADDRESS_WRITE_PRO
-    
-
-    SEND_DONE_counter : process( CLK )
-    begin
-        if (CLK'event and CLK = '1') then
+            
             if (SEND_DONE_CNT_RST = '1') then
                 SEND_DONE_CNT <= (others => '0');
-                RAM_EN <= '0';
             else
                 if (SEND_DONE = '1') then
                     SEND_DONE_CNT <= SEND_DONE_CNT + 1;
@@ -103,7 +89,16 @@ begin
                 end if;
             end if ;
         end if ;
-    end process ; -- SEND_DONE_counter
+    end process ; -- DATA_VLD_counter_AND_SEND_DONE_counter
+    
+
+    RAM_ADDRESS_WRITE_PRO: process(CLK, DATA_VLD_CNT)
+        variable DATA_VLD_CNT_var : unsigned(10 downto 0);
+    begin
+        DATA_VLD_CNT_var := DATA_VLD_CNT + "1111111111";   --DATA_VLD_CNT Minus One to address
+        RAM_ADDRESS_WRITE <= std_logic_vector(DATA_VLD_CNT_var(9 downto 0));
+    end process RAM_ADDRESS_WRITE_PRO; --RAM_ADDRESS_WRITE_PRO
+    
 
     RAM_ADDRESS_READ <= std_logic_vector(SEND_DONE_CNT(9 downto 0));
 
